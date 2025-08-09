@@ -1,0 +1,82 @@
+# TEMPLATE METADATA
+
+
+_templates_suffix: .jinja
+_envops:
+  block_start_string: "{%"
+  block_end_string: "%}"
+  variable_start_string: "{{"  
+  variable_end_string: "}}"
+  comment_start_string: "{#"
+  comment_end_string: "#}"
+
+
+_metadata:
+  name: "Chameleon Cloud ML Environment"
+  description: "Scaffold ML projects for Chameleon Cloud with GPU support, MLflow tracking, and containerized environments"
+  version: "1.0.0"
+  author: "Ahmed Alghali"
+  license: "MIT"
+  homepage: "https://github.com/a7med7x7/chamelab-cli"
+  repository: "https://github.com/a7med7x7/chamelab-cli"
+  
+# FILE HANDLING
+
+# Skip overwriting existing files (user can force with --force)
+_skip_if_exists:
+  - "*.ipynb"
+  - "requirements.txt"
+  - ".env"
+  - "src/**"
+
+# Files to exclude from template rendering (copy as-is)
+_templates_suffix_to_ignore:
+  - ".jpg"
+  - ".png" 
+  - ".gif"
+  - ".ico"
+  - ".pdf"
+  - ".zip"
+  - ".tar.gz"
+
+# CONDITIONAL FILE INCLUSION
+
+
+# Resource management files (only for resource-management and full-stack workflows)
+chi:
+  when: "{{ workflow in ['resource-management', 'full-stack'] }}"
+
+# Environment setup files (only for environment-setup and full-stack workflows)  
+docker:
+  when: "{{ workflow in ['environment-setup', 'full-stack'] }}"
+  
+scripts:
+  when: "{{ workflow in ['environment-setup', 'full-stack'] }}"
+
+# Example notebooks (optional)
+notebooks:
+  when: "{{ include_example_notebooks }}"
+
+# COMPUTED TEMPLATE VARIABLES
+
+
+# These variables are computed from user input and available in all templates
+
+_computed_vars:
+  # Container runtime based on GPU type
+  runtime: >-
+    {% if gpu_type == "nvidia" %}nvidia{% else %}""{% endif %}
+  
+  # Base Dockerfile based on framework and GPU
+  jupyter_dockerfile: >-
+    {% if ml_framework == "pytorch" or ml_framework == "pytorch lightning" and gpu_type == "nvidia" %}Dockerfile.jupyter-cuda-pt
+    {% elif ml_framework == "pytorch" or ml_framework == "pytorch lightning" and gpu_type == "amd" %}Dockerfile.jupyter-rocm-pt  
+    {% elif ml_framework == "tensorflow" and gpu_type == "amd" %}Dockerfile.jupyter-rocm-tf
+    {% elif ml_framework == "tensorflow" and gpu_type == "nvidia" %}Dockerfile.jupyter-cuda-tf
+    {% elif ml_framework == "data-science" %}Dockerfile.jupyter-ds
+    {% else %}Dockerfile.jupyter-ds{% endif %}
+    
+  # S3 bucket names
+  bucket_data: "{{ project_name }}-data"
+  bucket_metrics: "{{ project_name }}-mlflow-metrics"  
+  bucket_artifacts: "{{ project_name }}-mlflow-artifacts"
