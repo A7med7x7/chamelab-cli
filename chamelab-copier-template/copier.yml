@@ -1,5 +1,3 @@
-# TEMPLATE METADATA
-
 _templates_suffix: .jinja
 _envops:
   block_start_string: "{%"
@@ -122,6 +120,14 @@ ml_framework:
     - data-science: General data science stack (pandas, sklearn, etc.)
     - custom: Minimal base setup; you'll add your own requirements
   when: "{{ workflow in ['environment-setup', 'full-stack'] }}"
+
+cuda_version:
+  type: str
+  help: "What CUDA version you plan to use with your Jupyter image (more recent: cuda-12, older legacy GPU compatibility: cuda-11)"
+  choices:
+    - cuda11-latest
+    - cuda12-latest
+  when: "{{ (workflow in ['environment-setup', 'full-stack']) and (gpu_type == 'nvidia') }}"
 
 include_huggingface:
   type: bool
