@@ -36,6 +36,7 @@ _templates_suffix_to_ignore:
   - ".zip"
   - ".tar.gz"
 
+__skip_answered: false
   # PROJECT CONFIGURATION
 project_name:
   type: str
