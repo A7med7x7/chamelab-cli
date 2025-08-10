@@ -8,9 +8,9 @@
     "## Create Object store continairs (S3 buckets) \n",
     "we will use S3-compatible buckets to store our:\n",
     "\n",
-    "  - `<project>-data`: for datasets\n",
-    "  - `<project>-mlflow-metrics`: for metrics, logs\n",
-    "  - `<project>-mlflow-artifacts`: for model checkpoints, images, etc.\n",
+    "  - `{{ project_name }}-data`: for datasets\n",
+    "  - `{{ project_name }}-mlflow-metrics`: for metrics, logs\n",
+    "  - `{{ project_name }}-mlflow-artifacts`: for model checkpoints, images, etc.\n",
     "\n",
     "> These buckets will be used in later notebooks for data storage and experiment tracking and will be mounted to your localfilesystem when configuring your server via a notebook.\n",
     "\n",
@@ -45,9 +45,9 @@
    },
    "outputs": [],
    "source": [
-    "project_name = \"fancyproject\" # Define project name (this will prefix the bucket names)\n",
+    "project_name = \"{{ project_name }}\" # Define project name (this will prefix the bucket names)\n",
     "context.choose_project()\n",
-    "context.choose_site(default=\"CHI@TACC\") # Select your Chameleon Cloud project and site"
+    "context.choose_site(default=\"{{ chameleon_site }}\") # Select your Chameleon Cloud project and site"
    ]
   },
   {

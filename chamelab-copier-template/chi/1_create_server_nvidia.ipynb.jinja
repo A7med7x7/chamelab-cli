@@ -29,7 +29,7 @@
     "\n",
     "context.version = \"1.0\" \n",
     "context.choose_project()\n",
-    "context.choose_site(default=\"CHI@TACC\")"
+    "context.choose_site(default=\"{{ chameleon_site }}\")"
    ]
   },
   {
@@ -47,7 +47,7 @@
    },
    "outputs": [],
    "source": [
-    "lease_name = \"ahmed\""
+    "lease_name = \"{{ lease_name }}\""
    ]
   },
   {
@@ -295,7 +295,7 @@
    "source": [
     "# Mounting the buckets using rclone \n",
     "\n",
-    "project_name= 'myproject'\n",
+    "project_name= '{{ project_name }}'\n",
     "buckets = {\n",
     "    f'{project_name}-data': 'data',\n",
     "    f'{project_name}-mlflow-metrics': 'metrics'\n",
