@@ -3,10 +3,23 @@ services:
   jupyter:
     build:
       context: .
-      dockerfile: Dockerfile.jupyter-cuda
+      dockerfile: >-
+        {% if ml_framework == "pytorch" and gpu_type == "nvidia" %}
+        Dockerfile.jupyter-cuda-pt
+        {% elif ml_framework == "pytorch" and gpu_type == "amd" %}
+        Dockerfile.jupyter-rocm-pt
+        {% elif ml_framework == "tensorflow" and gpu_type == "nvidia" %}
+        Dockerfile.jupyter-cuda-tf
+        {% elif ml_framework == "tensorflow" and gpu_type == "amd" %}
+        Dockerfile.jupyter-rocm-tf
+        {% elif ml_framework == "data-science" or gpu_type == "none" %}
+        Dockerfile.jupyter-ds
+        {% else %}
+        Dockerfile.jupyter-cuda-pt
+        {% endif %}
     container_name: jupyter
     ports: 
-    - "8888:8888"
+      - "8888:8888"
     volumes:
       - ../notebooks:/home/jovyan/work/notebooks     
       - ../src:/home/jovyan/work/src        
@@ -16,7 +29,11 @@ services:
       - JUPYTER_ENABLE_LAB=yes
       - PYTHONPATH=/home/jovyan/work/
       - MLFLOW_TRACKING_URI=http://mlflow:8000
+    {% if gpu_type == "nvidia" %}
     runtime: nvidia
+    {% elif gpu_type == "amd" %}
+    runtime: rocm
+    {% endif %}
     restart: always 
 
   mlflow:
@@ -40,7 +57,7 @@ services:
       - mlflow
       - server
       - --backend-store-uri=/mlflow/mlruns
-      - --artifacts-destination=s3://${PROJECT_NAME}-mlflow-artifacts
+      - --artifacts-destination=s3://{{ project_name }}-mlflow-artifacts
       - --serve-artifacts
       - --host=0.0.0.0
       - --port=8000
