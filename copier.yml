@@ -54,11 +54,6 @@ author_name:
   default: CC
   help: Your name or organization/team for the project
 
-description:
-  type: str
-  default: AI project scaffolded for Chameleon Cloud
-  help: A short description of your project
-
 workflow:
   type: str
   choices:
