@@ -1,92 +1,66 @@
-# ML Environment on Chameleon Cloud
+# Chameleon Cloud ML Environment Template
 
-This repository automates setting up buckets, spinning up VMs and launching a fully configured Jupyter environment with MLFlow tracking server system.
+[![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/copier-org/copier)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/a7med7x7/chamelab-cli)](https://github.com/a7med7x7/chamelab-cli/releases)
 
-### 0. Prerequisites
-- You must have a working [Chameleon Cloud](https://chameleoncloud.org) account.
-- You have already reserved a lease on Chameleon Cloud that includes a GPU-enabled bare metal node
 
-### 1. Create S3 Buckets
+> Scaffold GPU-ready ML projects for [Chameleon Cloud](https://www.chameleoncloud.org) with MLflow tracking, containerized environments, and reproducible workflows.
 
-Run the notebook `0_create_buckets.ipynb` to create S3-compatible buckets for datasets, metrics, and artifacts. to live beyond your instance lifetime.
+--- 
 
-**In [Chameleon JupyterHub](https://jupyter.chameleoncloud.org/hub/), open and run:**
+##  Overview
 
-- [`chi/0_create_buckets.ipynb`](chi/0_create_buckets.ipynb)
-
----
-
-### 2. Launch and Set Up the Server
-
-Provision your server and configure it for your project.
-
-**In [Chameleon JupyterHub](https://jupyter.chameleoncloud.org/hub/), open and run:**
-
-- For NVIDIA: [`chi/1_create_server_nvidia.ipynb`](chi/1_create_server_nvidia.ipynb)
-- For AMD:  [`chi/1_create_server_amd.ipynb`](chi/1_create_server_amd.ipynb)
+This template helps you **bootstrap** a complete machine learning environment on Chameleon Cloud.  
+It is designed for **researchers, ML engineers, and students** working on ML research who want to:
+- Quickly set up Chameleon Cloud GPU instances
+- Configure a containerized ML environment (Docker + Compose)
+- Enable MLflow tracking 
+- Include example notebooks for popular ML frameworks
 
 ---
 
-### 3. Generate Environment Variables
+##  Requirements
 
-On your computer instance (SSH-ing from your local machine via shell), generate the `.env` file required for Docker Compose:
-From your **home directory** (`~`), run:
+- **Python** ≥ 3.8
+- **Copier** ≥ 9.0
+- [Chameleon Cloud account](https://www.chameleoncloud.org)
+
+---
+
+##  Installation
+
+Install Copier if you don’t have it yet:
 
 ```sh
- ./ReproGen/scripts/generate_env.sh
+pip install copier
 ```
 
-you will be prompted to enter your HuggingFace Token,after inputting.
-you should see something like:
-
-`✅ The .env file has been generated successfully at : /home/cc/.env`
-
----
-
-### 4. Start the Containarized Environment
-
-From your **home directory** (`~`), run:
-
+or 
 ```sh
-docker compose --env-file ~/.env -f ReproGen/docker/docker-compose.yml up -d --build
+pipx install copier 
 ```
 
 ---
 
-### 5. Login to Jupyter Lab and MLFlow UI
+## QUick Start 
 
-1. Access your jupyter lab at:  `<HOST_IP>:8888` you can grap the token from running image using the command:
-
+Create a New Project with 
 ```sh
-docker logs jupyter 2>&1 | grep -oE "http://127.0.0.1:8888[^ ]*token=[^ ]*"
+copier copy --trust gh:A7med7x7/chamelab-cli.git my-ml-project
 ```
+You’ll be prompted for:
 
-- In the Jupyter terminal, log into GitHub using the CLI
+- Project name
 
-```sh
-gh auth login
-```
+- Author name
 
-Follow the intstructions to authenticate.
+- Workflow type
 
-2. Access MLFlow UI at `<HOST_IP>:8000`
+- GPU type
 
-### 5.5. Stop the Containerized Environment
-If you’d like to pause your environment, you can stop the running containers with the command:
+- ML framework
 
-```sh
-docker compose --env-file ~/.env -f ReproGen/docker/docker-compose.yml down
-```
+- Optional integrations
 
-This will stop and remove the containers, but all your data in mounted volumes will remain safe.
-When you want to restart later, simply run the docker compose up command again (see Step 4).
-
----
-
-### 6. Clean Up Resources
-
-When finished, delete your server to free up resources.
-
-**In Chameleon JupyterHub, open and run:**
-
-- [`chi/2_delete_resources.ipynb`](chi/2_delete_resources.ipynb)
+This will generate your ML project in my-ml-project/ 
