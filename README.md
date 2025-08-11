@@ -1,4 +1,4 @@
-# Chameleon Cloud ML Environment Template
+# Chamelab Template Generator
 
 [![Copier](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/copier-org/copier/master/img/badge/badge-grayscale-inverted-border-orange.json)](https://github.com/copier-org/copier)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -47,7 +47,7 @@ pipx install copier
 
 Create a New Project with 
 ```sh
-copier copy --trust gh:A7med7x7/chamelab-cli.git my-ml-project
+copier copy --vcs-ref main https://github.com/A7med7x7/chamelab-cli.git projectx
 ```
 You’ll be prompted for:
 
