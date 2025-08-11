@@ -108,7 +108,7 @@ ml_framework:
     - pytorch
     - tensorflow
     - data-science
-    - custom
+    - pytorch-lightning
   default: pytorch
   help: |
     Primary ML framework for your environment:
@@ -130,9 +130,12 @@ include_huggingface:
   type: bool
   default: true
   help: |
-    Include HuggingFace token configuration?
-    Required for downloading models from HuggingFace Hub.
+    Enable Hugging Face integration?
+    This will set up your containerized environment so you can download and use
+    models directly from the Hugging Face Hub.
+    If enabled, you’ll be asked to provide an access token in the next step.
   when: "{{ workflow in ['environment-setup', 'full-stack'] }}"
+
 
 hugging_face_token:
   type: str
