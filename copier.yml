@@ -1,0 +1,171 @@
+# The template root is found here
+_subdirectory: template
+_envops:
+  block_start_string: "{%"
+  block_end_string: "%}"
+  variable_start_string: "{{"  
+  variable_end_string: "}}"
+  comment_start_string: "{#"
+  comment_end_string: "#}"
+
+
+_metadata:
+  name: "Chameleon Cloud ML Environment"
+  description: "Scaffold ML projects for Chameleon Cloud with GPU support, MLflow tracking, and containerized environments"
+  version: "1.0.0"
+  author: "Ahmed Alghali"
+  license: "MIT"
+  homepage: "https://github.com/a7med7x7/chamelab-cli"
+  repository: "https://github.com/a7med7x7/chamelab-cli"
+  
+# FILE HANDLING
+
+# Skip overwriting existing files (user can force with --force)
+_skip_if_exists:
+  - "*.ipynb"
+  - "requirements.txt"
+  - ".env"
+  - "src/**"
+
+# Files to exclude from template rendering (copy as-is)
+_templates_suffix_to_ignore:
+  - ".jpg"
+  - ".png" 
+  - ".gif"
+  - ".ico"
+  - ".pdf"
+  - ".zip"
+  - ".tar.gz"
+
+__skip_answered: false
+  # PROJECT CONFIGURATION
+project_name:
+  type: str
+  default: mltrain-project
+  help: |
+    Project name that will be used for:
+    - S3 bucket prefixes (e.g., project-name-data, project-name-mlflow-metrics)
+    - Resource naming conventions
+    - Directory and file organization
+
+
+author_name:
+  type: str
+  default: CC
+  help: Your name or organization/team for the project
+
+description:
+  type: str
+  default: AI project scaffolded for Chameleon Cloud
+  help: A short description of your project
+
+workflow:
+  type: str
+  choices:
+    - resource-management
+    - environment-setup
+    - full-stack
+  default: full-stack
+  help: |
+    Which workflow do you want to set up?
+    - resource-management: Only Chameleon Cloud resource provisioning (notebooks for creating buckets, servers, cleanup)
+    - environment-setup: Only Docker environment setup (compose files, Dockerfiles, scripts)
+    - full-stack: Complete workflow with both resource management and environment setup
+
+
+# RESOURCE MANAGEMENT QUESTIONS (conditional on workflow)
+
+chameleon_site:
+  type: str
+  choices:
+    - CHI@TACC
+    - CHI@UC
+  default: CHI@TACC
+  help: |
+    Chameleon Cloud site where your resources are located.
+    - CHI@TACC: Texas Advanced Computing Center (most GPU nodes)
+    - CHI@UC: University of Chicago
+  when: "{{ workflow in ['resource-management', 'full-stack'] }}"
+
+lease_name:
+  type: str
+  help: |
+    Your Chameleon Cloud lease name.
+    This should match the lease you created in the Chameleon Cloud portal.
+    Example: "my-gpu-lease-2024"
+  when: "{{ workflow in ['resource-management', 'full-stack'] }}"
+
+gpu_type:
+  type: str
+  choices:
+    - nvidia
+    - amd
+    - none
+  default: nvidia
+  help: GPU type you plan to use for your lease
+  when: "{{ workflow in ['environment-setup', 'resource-management', 'full-stack'] }}"
+
+# ENVIRONMENT SETUP QUESTIONS (conditional on workflow)
+
+ml_framework:
+  type: str
+  choices:
+    - pytorch
+    - tensorflow
+    - data-science
+    - custom
+  default: pytorch
+  help: |
+    Primary ML framework for your environment:
+    - pytorch: PyTorch with CUDA/ROCm support
+    - tensorflow: TensorFlow with GPU support
+    - data-science: General data science stack (pandas, sklearn, etc.)
+    - custom: Minimal base setup; you'll add your own requirements
+  when: "{{ workflow in ['environment-setup', 'full-stack'] }}"
+
+cuda_version:
+  type: str
+  help: "What CUDA version you plan to use with your Jupyter image (more recent: cuda-12, older legacy GPU compatibility: cuda-11)"
+  choices:
+    - cuda11-latest
+    - cuda12-latest
+  when: "{{ (workflow in ['environment-setup', 'full-stack']) and (gpu_type == 'nvidia') }}"
+
+include_huggingface:
+  type: bool
+  default: true
+  help: |
+    Include HuggingFace token configuration?
+    Required for downloading models from HuggingFace Hub.
+  when: "{{ workflow in ['environment-setup', 'full-stack'] }}"
+
+hugging_face_token:
+  type: str
+  secret: true
+  default: ""
+  help: |
+    Please enter your HuggingFace token.
+    You can get one from https://huggingface.co/settings/tokens
+  when: "{{ (workflow in ['environment-setup', 'full-stack']) and include_huggingface }}"
+
+
+include_example_notebooks:
+  type: bool
+  default: true
+  help: |
+    Include example ML notebooks showing:
+    - PyTorch manual logging with MLflow
+    - PyTorch Lightning auto-logging
+    - Sklearn auto-logging
+    - TensorFlow auto-logging
+  when: "{{ workflow in ['environment-setup', 'full-stack'] }}"
+
+example_notebook_choice:
+  type: str
+  help: "Select the example ML notebook type to include"
+  choices:
+    - PyTorch manual logging
+    - PyTorch Lightning auto-logging
+    - Sklearn auto-logging
+    - TensorFlow auto-logging
+  when: "{{ (workflow in ['environment-setup', 'full-stack']) and include_example_notebooks }}"
